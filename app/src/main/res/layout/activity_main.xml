@@ -9,7 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="160dp"
         android:background="@color/colorPrimary" />
-
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:id="@+id/show_dialog"/>
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

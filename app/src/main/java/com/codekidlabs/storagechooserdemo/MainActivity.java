@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
@@ -97,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
                 builder.shouldResumeSession(isChecked);
             }
         });
+
+
 
         fileCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -221,6 +224,37 @@ public class MainActivity extends AppCompatActivity {
                 chooser.show();
             }
 
+        });
+
+        ((Button) findViewById(R.id.show_dialog)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooser = builder.build();
+                chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
+                    @Override
+                    public void onSelect(String path) {
+                        Toast.makeText(getApplicationContext(), path, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                chooser.setOnCancelListener(new StorageChooser.OnCancelListener() {
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(getApplicationContext(), "Storage Chooser Cancelled.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                chooser.setOnMultipleSelectListener(new StorageChooser.OnMultipleSelectListener() {
+                    @Override
+                    public void onDone(ArrayList<String> selectedFilePaths) {
+                        for(String s: selectedFilePaths) {
+                            Log.e(TAG, s);
+                        }
+                    }
+                });
+
+                chooser.show();
+            }
         });
     }
 
