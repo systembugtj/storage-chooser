@@ -45,9 +45,19 @@ public class DiskUtil {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
+    private static MemoryUtil memoryUtil = new MemoryUtil();
+
+    private static Storages buildStorages(String path, String title) {
+        Storages storages = new Storages();
+        storages.setStorageTitle(title);
+        storages.setStoragePath(path);
+        storages.setMemoryTotalSize(memoryUtil.formatSize(memoryUtil.getTotalMemorySize(path)));
+        storages.setMemoryAvailableSize(memoryUtil.formatSize(memoryUtil.getAvailableMemorySize(path)));
+        return storages;
+    }
 
     public static List<Storages> populateStoragesList(Content content) {
-        MemoryUtil memoryUtil = new MemoryUtil();
+
         List<Storages> storagesList = Lists.newArrayList();
 
         File storageDir = new File("/storage");
@@ -55,15 +65,11 @@ public class DiskUtil {
 
         File[] volumeList = storageDir.listFiles();
 
-        Storages storages = new Storages();
+        Storages storages = buildStorages(internalStoragePath, content.getInternalStorageText());
 
-        // just add the internal storage and avoid adding emulated henceforth
-        storages.setStorageTitle(content.getInternalStorageText());
-
-        storages.setStoragePath(internalStoragePath);
-        storages.setMemoryTotalSize(memoryUtil.formatSize(memoryUtil.getTotalMemorySize(internalStoragePath)));
-        storages.setMemoryAvailableSize(memoryUtil.formatSize(memoryUtil.getAvailableMemorySize(internalStoragePath)));
-        storagesList.add(storages);
+        if (!storages.getMemoryTotalSize().equals("0")) {
+            storagesList.add(storages);
+        }
 
 
         for (File f : volumeList) {
@@ -74,38 +80,29 @@ public class DiskUtil {
                 boolean hasUsb = false;
                 for (File rf : files) {
                     if (rf.getName().indexOf("sda") == 0) {
-                        Storages sharedStorage = new Storages();
-                        String fPath = rf.getAbsolutePath();
-                        sharedStorage.setStorageTitle(content.getUsbStorageText());
-                        sharedStorage.setMemoryTotalSize(memoryUtil.formatSize(memoryUtil.getTotalMemorySize(fPath)));
-                        sharedStorage.setMemoryAvailableSize(memoryUtil.formatSize(memoryUtil.getAvailableMemorySize(fPath)));
-                        sharedStorage.setStoragePath(fPath);
-                        storagesList.add(sharedStorage);
-                        hasUsb = true;
+                        storages = buildStorages(rf.getAbsolutePath(), content.getUsbStorageText());
+                        if (!storages.getMemoryTotalSize().equals("0")) {
+                            storagesList.add(storages);
+                            hasUsb = true;
+                        }
                     }
                 }
                 // if no usb defined, use external_storage.
                 if (!hasUsb) {
-                    Storages sharedStorage = new Storages();
-                    String fPath = f.getAbsolutePath();
-                    sharedStorage.setStorageTitle(f.getName());
-                    sharedStorage.setMemoryTotalSize(memoryUtil.formatSize(memoryUtil.getTotalMemorySize(fPath)));
-                    sharedStorage.setMemoryAvailableSize(memoryUtil.formatSize(memoryUtil.getAvailableMemorySize(fPath)));
-                    sharedStorage.setStoragePath(fPath);
-                    storagesList.add(sharedStorage);
+                    Storages sharedStorage = buildStorages(f.getAbsolutePath(), f.getName());
+                    if (!storages.getMemoryTotalSize().equals("0")) {
+                        storagesList.add(storages);
+                    }
                 }
             } else if (!f.getName().equals(MemoryUtil.SELF_DIR_NAME)
                     && !f.getName().equals(MemoryUtil.EMULATED_DIR_KNOX)
                     && !f.getName().equals(MemoryUtil.EMULATED_DIR_NAME)
                     && !f.getName().equals(MemoryUtil.SDCARD0_DIR_NAME)
                     && !f.getName().equals(MemoryUtil.CONTAINER)) {
-                Storages sharedStorage = new Storages();
-                String fPath = f.getAbsolutePath();
-                sharedStorage.setStorageTitle(f.getName());
-                sharedStorage.setMemoryTotalSize(memoryUtil.formatSize(memoryUtil.getTotalMemorySize(fPath)));
-                sharedStorage.setMemoryAvailableSize(memoryUtil.formatSize(memoryUtil.getAvailableMemorySize(fPath)));
-                sharedStorage.setStoragePath(fPath);
-                storagesList.add(sharedStorage);
+                storages = buildStorages(f.getAbsolutePath(), f.getName());
+                if (!storages.getMemoryAvailableSize().equals("0")) {
+                    storagesList.add(storages);
+                };
             }
         }
         return storagesList;

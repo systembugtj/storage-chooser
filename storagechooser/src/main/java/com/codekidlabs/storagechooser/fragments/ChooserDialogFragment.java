@@ -143,7 +143,6 @@ public class ChooserDialogFragment extends android.app.DialogFragment {
                                 showSecondaryChooser(dirPath, mConfig);
                             }
 
-
                         }
                     } else {
                         if (mConfig.isActionSave()) {
