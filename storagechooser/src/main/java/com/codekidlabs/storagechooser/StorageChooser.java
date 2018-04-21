@@ -4,17 +4,16 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.codekidlabs.storagechooser.fragments.ChooserDialogFragment;
 import com.codekidlabs.storagechooser.models.Config;
-import com.codekidlabs.storagechooser.utils.DiskUtil;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
+
+import static com.codekidlabs.storagechooser.fragments.SecondaryChooserFragment.showSecondaryChooser;
 
 
 public class StorageChooser {
@@ -85,7 +84,7 @@ public class StorageChooser {
         }
 
         if (sConfig.isResumeSession() && StorageChooser.LAST_SESSION_PATH != null) {
-            DiskUtil.showSecondaryChooser(StorageChooser.LAST_SESSION_PATH, sConfig);
+            showSecondaryChooser(StorageChooser.LAST_SESSION_PATH, sConfig);
         } else {
 
             // if dev needs to skip overview and the primary path is not mentioned the directory
@@ -95,11 +94,11 @@ public class StorageChooser {
 
                     // internal storage is always the first element (I took care of it :wink:)
                     String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-                    DiskUtil.showSecondaryChooser(dirPath, sConfig);
+                    showSecondaryChooser(dirPath, sConfig);
                 } else {
 
                     // path provided by dev is the goto path for chooser
-                    DiskUtil.showSecondaryChooser(sConfig.getPrimaryPath(), sConfig);
+                    showSecondaryChooser(sConfig.getPrimaryPath(), sConfig);
                 }
 
             } else {

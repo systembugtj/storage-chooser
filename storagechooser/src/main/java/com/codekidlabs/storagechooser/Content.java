@@ -12,12 +12,20 @@ public class Content {
     private String cancelLabel = "Cancel";
     private String overviewHeading = "Choose Storage";
     private String internalStorageText = "Internal Storage";
+    private String usbStorageText = "USB Storage";
     private String freeSpaceText = "%s free";
     private String folderCreatedToastText = "Folder Created";
     private String folderErrorToastText = "Error occured while creating folder. Try again.";
     private String textfieldHintText = "Folder Name";
     private String textfieldErrorText = "Empty Folder Name";
 
+    public String getUsbStorageText() {
+        return usbStorageText;
+    }
+
+    public void setUsbStorageText(String usbStorageText) {
+        this.usbStorageText = usbStorageText;
+    }
 
     public String getSelectLabel() {
         return selectLabel;

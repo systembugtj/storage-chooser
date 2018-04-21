@@ -15,7 +15,10 @@ public class MemoryUtil {
     public static final String EMULATED_DIR_KNOX = "knox-emulated";
     public static final String SDCARD0_DIR_NAME = "sdcard0";
     public static final String CONTAINER = "container";
+    public static final String MIBOX_EXTERNAL_STORAGE = "external_storage";
+
     private static final String ERROR = "error";
+
 
     public boolean isExternalStoragePresent() {
         return getStorageListSize() != 1;

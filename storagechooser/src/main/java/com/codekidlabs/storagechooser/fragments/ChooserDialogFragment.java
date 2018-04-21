@@ -30,12 +30,12 @@ import com.codekidlabs.storagechooser.utils.FileUtil;
 import com.codekidlabs.storagechooser.utils.MemoryUtil;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.codekidlabs.storagechooser.StorageChooser.Theme.OVERVIEW_BG_INDEX;
 import static com.codekidlabs.storagechooser.StorageChooser.Theme.OVERVIEW_HEADER_INDEX;
 import static com.codekidlabs.storagechooser.StorageChooser.Theme.OVERVIEW_TEXT_INDEX;
+import static com.codekidlabs.storagechooser.fragments.SecondaryChooserFragment.showSecondaryChooser;
 
 
 public class ChooserDialogFragment extends android.app.DialogFragment {
@@ -136,11 +136,11 @@ public class ChooserDialogFragment extends android.app.DialogFragment {
                                 mHandler.postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        DiskUtil.showSecondaryChooser(dirPath, mConfig);
+                                        showSecondaryChooser(dirPath, mConfig);
                                     }
                                 }, 250);
                             } else {
-                                DiskUtil.showSecondaryChooser(dirPath, mConfig);
+                                showSecondaryChooser(dirPath, mConfig);
                             }
 
 
@@ -198,7 +198,7 @@ public class ChooserDialogFragment extends android.app.DialogFragment {
 
             if (doesPassThresholdTest((long) mConfig.getMemoryThreshold(), thresholdSuffix, availableMem)) {
                 String dirPath = evaluatePath(position);
-                DiskUtil.showSecondaryChooser(dirPath, mConfig);
+                showSecondaryChooser(dirPath, mConfig);
             } else {
                 String suffixedAvailableMem = String.valueOf(memoryUtil.suffixedSize(availableMem, thresholdSuffix)) + " " + thresholdSuffix;
                 Toast.makeText(getActivity().getApplicationContext(), getString(R.string.toast_threshold_breached, suffixedAvailableMem), Toast.LENGTH_SHORT).show();
@@ -217,11 +217,7 @@ public class ChooserDialogFragment extends android.app.DialogFragment {
      * @return String with the required path for developers
      */
     private String evaluatePath(int i) {
-        if (i == 0) {
-            return Environment.getExternalStorageDirectory().getAbsolutePath();
-        } else {
-            return "/storage/" + storagesList.get(i).getStorageTitle();
-        }
+        return storagesList.get(i).getStoragePath();
     }
 
     /**
@@ -240,40 +236,7 @@ public class ChooserDialogFragment extends android.app.DialogFragment {
      * populate storageList with necessary storages with filter applied
      */
     private void populateList() {
-        storagesList = new ArrayList<>();
-
-        File storageDir = new File("/storage");
-        String internalStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-
-        File[] volumeList = storageDir.listFiles();
-
-        Storages storages = new Storages();
-
-        // just add the internal storage and avoid adding emulated henceforth
-        storages.setStorageTitle(mContent.getInternalStorageText());
-
-        storages.setStoragePath(internalStoragePath);
-        storages.setMemoryTotalSize(memoryUtil.formatSize(memoryUtil.getTotalMemorySize(internalStoragePath)));
-        storages.setMemoryAvailableSize(memoryUtil.formatSize(memoryUtil.getAvailableMemorySize(internalStoragePath)));
-        storagesList.add(storages);
-
-
-        for (File f : volumeList) {
-            if (!f.getName().equals(MemoryUtil.SELF_DIR_NAME)
-                    && !f.getName().equals(MemoryUtil.EMULATED_DIR_KNOX)
-                    && !f.getName().equals(MemoryUtil.EMULATED_DIR_NAME)
-                    && !f.getName().equals(MemoryUtil.SDCARD0_DIR_NAME)
-                    && !f.getName().equals(MemoryUtil.CONTAINER)) {
-                Storages sharedStorage = new Storages();
-                String fPath = f.getAbsolutePath();
-                sharedStorage.setStorageTitle(f.getName());
-                sharedStorage.setMemoryTotalSize(memoryUtil.formatSize(memoryUtil.getTotalMemorySize(fPath)));
-                sharedStorage.setMemoryAvailableSize(memoryUtil.formatSize(memoryUtil.getAvailableMemorySize(fPath)));
-                sharedStorage.setStoragePath(fPath);
-                storagesList.add(sharedStorage);
-            }
-        }
-
+        storagesList = DiskUtil.populateStoragesList(mContent);
     }
 
     // Convinience methods

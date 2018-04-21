@@ -48,8 +48,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.codekidlabs.storagechooser.Constant.SC_CHOOSER_FLAG;
+import static com.codekidlabs.storagechooser.Constant.SC_PREFERENCE_KEY;
 import static com.codekidlabs.storagechooser.StorageChooser.Theme;
-
 
 public class SecondaryChooserFragment extends android.app.DialogFragment {
 
@@ -430,8 +431,8 @@ public class SecondaryChooserFragment extends android.app.DialogFragment {
     private void initListView(Context context, View view, boolean shouldShowMemoryBar) {
         listView = view.findViewById(R.id.storage_list_view);
         mPathChosen = view.findViewById(R.id.path_chosen);
-        mBundlePath = this.getArguments().getString(DiskUtil.SC_PREFERENCE_KEY);
-        isFilePicker = this.getArguments().getBoolean(DiskUtil.SC_CHOOSER_FLAG, false);
+        mBundlePath = this.getArguments().getString(SC_PREFERENCE_KEY);
+        isFilePicker = this.getArguments().getBoolean(SC_CHOOSER_FLAG, false);
         populateList(mBundlePath);
         secondaryChooserAdapter = new SecondaryChooserAdapter(customStoragesList, context, scheme,
                 mConfig.getListFont(), mConfig.isListFromAssets());
@@ -735,5 +736,36 @@ public class SecondaryChooserFragment extends android.app.DialogFragment {
             return false;
         }
         return true;
+    }
+
+    /**
+     * secondary choosers are dialogs apart from overview (CustomChooserFragment and FilePickerFragment)
+     * Configs :-
+     * setType()
+     * allowCustomPath()
+     *
+     * @param dirPath root path(starting-point) for the secondary choosers
+     * @param config  configuration from developer
+     */
+    public static void showSecondaryChooser(String dirPath, Config config) {
+        Bundle bundle = new Bundle();
+        bundle.putString(SC_PREFERENCE_KEY, dirPath);
+
+        switch (config.getSecondaryAction()) {
+            case StorageChooser.NONE:
+                break;
+            case StorageChooser.DIRECTORY_CHOOSER:
+                bundle.putBoolean(SC_CHOOSER_FLAG, false);
+                SecondaryChooserFragment c = new SecondaryChooserFragment();
+                c.setArguments(bundle);
+                c.show(config.getFragmentManager(), "custom_chooser");
+                break;
+            case StorageChooser.FILE_PICKER:
+                bundle.putBoolean(SC_CHOOSER_FLAG, true);
+                SecondaryChooserFragment f = new SecondaryChooserFragment();
+                f.setArguments(bundle);
+                f.show(config.getFragmentManager(), "file_picker");
+                break;
+        }
     }
 }

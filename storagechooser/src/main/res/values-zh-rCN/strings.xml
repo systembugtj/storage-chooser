@@ -4,7 +4,7 @@
     <string name="choose_storage">请选择存储设备</string>
     <string name="choose_external_storage">请选择外部存储设备</string>
     <string name="external_storage">外部存储设备</string>
-    <string name="usb_storage">USB存储设备</string>
+    <string name="usb_storage">U盘</string>
     <string name="text_freespace">空闲空间 %1$</string>
     <string name="toast_threshold_breached">剩余空间不足（ %1$），无法完成当前操作，请清理存储空间。</string>
     <string name="toast_not_readable">您选择的存储空间暂时无法操作。</string>
